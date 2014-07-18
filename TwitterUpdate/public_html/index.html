@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Myron</title>
+        <link rel="shortcut icon" href="http://www.myron.com/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://www.myron.com/">Myron</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="index.html">Update Twitter</a></li>
+        <li><a href="https://twitter.com/MyronCorp"><img src="http://www.myron.com/static/webupload/MyronArtifacts/images/icons/icon_twitter.png" width="27" height="28" border="0" alt="twitter"></a></li>
+        <li><a href="https://www.facebook.com/MyronCorp"><img src="http://www.myron.com/static/webupload/MyronArtifacts/images/icons/icon_facebook.png" width="27" height="28" alt="facebook" border="0"></a></li>
+        
+      </ul>
+    
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+        <input type="file" id="openselect" title="Upload CSV" />
+     
+    </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="http://gregpike.net/demos/bootstrap-file-input/bootstrap.file-input.js"></script>
+    <script src="http://www.myron.com/static/webupload/MyronArtifacts/js/oauth.js"></script>
+    <script type="text/javascript">
+        OAuth.initialize('wksJjQzMRCHmhVK7u4ry_k72ON4');
+        var auth;
+        $('input[type=file]').bootstrapFileInput();
+        $('.file-inputs').bootstrapFileInput();
+        $(document).ready(function() {
+            function doOpen(evt) {
+                var files = evt.target.files,
+                        reader = new FileReader();
+                reader.onload = function() {
+                    var data = this.result;
+                    data= data.replace(/\n/g, ",");
+                    data = data.slice(0, - 1);
+                    var newArray =data.split(",");
+                    OAuth.popup('twitter', function(err, result) {
+                        var actualdate=new Date();
+                        var day= actualdate.getDate();
+                        var month=actualdate.getMonth();
+                        var year=actualdate.getFullYear();
+                        var coremetrics="?cm_mmc=twitter-_-NewProducts-_-"+month+"_"+day+"_"+year+"-_-none";
+                        for (i = 0; i < newArray.length; (i = i + 2)) {
+                            var link=newArray[i + 1].slice(0, - 1); 
+                            link=link+coremetrics;
+                            var resut1 = "Check the new " + newArray[i] + " products on " + link;
+                            result.post('https://api.twitter.com/1.1/statuses/update.json', {
+                                data: {
+                                    status: resut1
+                                            // ...   
+                                }
+                            })
+                                    .done(function(response) {
+                                        console.log('success: ' + JSON.stringify(response));
+                                    })
+                                    .fail(function(error) {
+                                        console.log('success: ' + JSON.stringify(error));
+                                    });
+                        }
+
+
+                    });
+
+                };
+                reader.readAsText(files[0]);
+            }
+
+            var openbtn = document.getElementById("openselect");
+            openselect.addEventListener("change", doOpen, false);
+
+
+
+        });
+    </script>
+</html>
